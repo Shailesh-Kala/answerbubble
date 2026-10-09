@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sunrise Dental Clinic, Gurugram (demo)</title>
+<meta name="description" content="Demo website for AnswerBubble: instant FAQ answers and WhatsApp chat. Sunrise Dental Clinic is a fictional business.">
+<style>
+  :root { --brand: #0F766E; --ink: #17212b; --muted: #4b5563; --soft: #f1f7f6; --line: #dde5e4; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 17px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; color: var(--ink); background: #fff; }
+  a { color: var(--brand); }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  .note { background: #17212b; color: #fff; font-size: 14px; text-align: center; padding: 8px 16px; }
+  .note a { color: #fff; font-weight: 700; }
+  header { border-bottom: 1px solid var(--line); }
+  header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 72px; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; color: var(--ink); text-decoration: none; }
+  .logo svg { width: 34px; height: 34px; }
+  nav { display: flex; gap: 22px; font-weight: 600; font-size: 16px; }
+  nav a { color: var(--ink); text-decoration: none; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 10px 22px; border-radius: 12px; border: 2px solid var(--brand); background: var(--brand); color: #fff; font: inherit; font-weight: 700; text-decoration: none; cursor: pointer; }
+  .btn.ghost { background: #fff; color: var(--brand); }
+  .hero { background: linear-gradient(160deg, #e7f4f2 0%, #fdf6ec 100%); }
+  .hero .wrap { display: grid; grid-template-columns: 1.15fr .85fr; gap: 48px; align-items: center; padding-top: 72px; padding-bottom: 80px; }
+  .eyebrow { font-weight: 700; color: var(--brand); letter-spacing: .02em; margin: 0 0 8px; }
+  h1 { font-size: clamp(34px, 5vw, 54px); line-height: 1.1; margin: 0 0 18px; letter-spacing: -.02em; }
+  .lead { font-size: 19px; color: var(--muted); max-width: 34em; margin: 0 0 28px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 24px; box-shadow: 0 10px 30px rgba(15, 118, 110, .08); }
+  .card h2 { font-size: 20px; margin: 0 0 12px; }
+  .hours { width: 100%; border-collapse: collapse; font-size: 16px; }
+  .hours td { padding: 7px 0; border-bottom: 1px solid var(--line); }
+  .hours td:last-child { text-align: right; font-weight: 600; white-space: nowrap; padding-left: 12px; }
+  section { padding: 72px 0; }
+  h2.title { font-size: clamp(26px, 3.2vw, 36px); margin: 0 0 8px; letter-spacing: -.01em; }
+  .sub { color: var(--muted); margin: 0 0 32px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .grid .card h3 { margin: 0 0 6px; font-size: 19px; }
+  .grid .card p { margin: 0; color: var(--muted); font-size: 16px; }
+  .price { color: var(--brand); font-weight: 700; }
+  .visit { background: var(--soft); }
+  .visit .wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+  footer { border-top: 1px solid var(--line); padding: 28px 0 120px; color: var(--muted); font-size: 15px; }
+  @media (max-width: 860px) {
+    nav { display: none; }
+    .hero .wrap, .visit .wrap { grid-template-columns: 1fr; gap: 32px; padding-top: 48px; padding-bottom: 56px; }
+    .grid { grid-template-columns: 1fr; }
+    section { padding: 52px 0; }
+  }
+</style>
+</head>
+<body>
+<div class="note">Demo website. Sunrise Dental Clinic is a fictional business, made up to show AnswerBubble. <a href="https://wa.me/917740067909?text=Hi%20Shailesh%2C%20I%20would%20like%20AnswerBubble%20on%20my%20website." target="_blank" rel="noopener noreferrer">Want this on your website? Chat with me on WhatsApp</a></div>
+<header>
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="Sunrise Dental Clinic, home">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="24" r="9" fill="#F59E0B"/><path d="M4 26h32" stroke="#0F766E" stroke-width="3" stroke-linecap="round"/><path d="M20 6v5M8.5 11.5l3.5 3.5M31.5 11.5 28 15" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/><rect x="2" y="27" width="36" height="11" fill="#fff"/></svg>
+      Sunrise Dental
+    </a>
+    <nav aria-label="Main">
+      <a href="#treatments">Treatments</a>
+      <a href="#visit">Visit us</a>
+      <a href="#visit" data-help-open>Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <div class="hero">
+    <div class="wrap">
+      <div>
+        <p class="eyebrow">Family dentistry in Sector 45, Gurugram</p>
+        <h1>Gentle dental care for the whole family</h1>
+        <p class="lead">Check-ups, cleaning, fillings, braces and kids' dentistry. Clear prices, short waiting times, and a team that explains everything first.</p>
+        <div class="actions">
+          <button class="btn" type="button" data-help-open>Ask a question</button>
+          <a class="btn ghost" href="#treatments">See treatments</a>
+        </div>
+      </div>
+      <div class="card" aria-labelledby="hours-title">
+        <h2 id="hours-title">Clinic timings</h2>
+        <table class="hours">
+          <tr><td>Mon to Sat, morning</td><td>10:00 AM – 1:30 PM</td></tr>
+          <tr><td>Mon to Sat, evening</td><td>4:00 PM – 8:00 PM</td></tr>
+          <tr><td>Sunday</td><td>Closed</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <section id="treatments">
+    <div class="wrap">
+      <h2 class="title">Treatments</h2>
+      <p class="sub">Prices are starting prices. We confirm the final cost before any treatment.</p>
+      <div class="grid">
+        <div class="card"><h3>Check-up and consultation</h3><p>Full check-up with advice. <span class="price">₹400</span></p></div>
+        <div class="card"><h3>Cleaning and polishing</h3><p>Scaling and polishing in about 40 minutes. <span class="price">₹1,200</span></p></div>
+        <div class="card"><h3>Fillings</h3><p>Tooth-coloured fillings, usually in one visit. <span class="price">from ₹1,500</span></p></div>
+        <div class="card"><h3>Root canal treatment</h3><p>Done in 1 to 3 visits, with numbing. <span class="price">from ₹6,500</span></p></div>
+        <div class="card"><h3>Braces and aligners</h3><p>Free first orthodontic consultation. <span class="price">from ₹35,000</span></p></div>
+        <div class="card"><h3>Kids' dentistry</h3><p>Friendly visits for children aged 3 and up, on Saturdays.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="visit" id="visit">
+    <div class="wrap">
+      <div>
+        <h2 class="title">Visit us</h2>
+        <p>Shop 12, Sunrise Plaza, Sector 45, Gurugram, Haryana (fictional address)</p>
+        <p>Free basement parking. 5 minutes' walk from the metro.</p>
+        <p>Have a question? Tap the chat bubble at the bottom of the screen, or <a href="#visit" data-help-open>ask us here</a>.</p>
+      </div>
+      <div class="card">
+        <h2>Try the help bubble</h2>
+        <p>Type a question such as <strong>fees</strong>, <strong>timings</strong>, <strong>kids</strong>, or even a typo like <strong>apointment</strong>. You can also type in Hindi, e.g. <strong>समय</strong>.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">© 2026 Sunrise Dental Clinic (fictional). Demo of AnswerBubble. This page sets no cookies and loads nothing from other websites.</div>
+</footer>
+
+<script>
+  window.HelpWidget = {
+    whatsapp: "917740067909",
+    businessName: "Sunrise Dental Clinic",
+    welcome: "Hi! Ask about timings, fees or treatments, or chat with our front desk on WhatsApp.",
+    color: "#0F766E",
+    position: "right",
+    language: "en",
+    // Pro options
+    launcherLabel: "Need help?",
+    contacts: [
+      { label: "Appointments", whatsapp: "917740067909" },
+      { label: "Bills and payments", whatsapp: "917740067909" }
+    ],
+    hours: {
+      timezone: "Asia/Kolkata",
+      mon: [["10:00", "13:30"], ["16:00", "20:00"]],
+      tue: [["10:00", "13:30"], ["16:00", "20:00"]],
+      wed: [["10:00", "13:30"], ["16:00", "20:00"]],
+      thu: [["10:00", "13:30"], ["16:00", "20:00"]],
+      fri: [["10:00", "13:30"], ["16:00", "20:00"]],
+      sat: [["10:00", "13:30"], ["16:00", "20:00"]],
+      sun: []
+    },
+    hideOn: ["/checkout"],
+    faqs: [
+      { q: "What are your clinic timings?", a: "Mon to Sat: **10:00 AM to 1:30 PM** and **4:00 PM to 8:00 PM**.\nSunday: closed.", keywords: ["hours", "open", "time", "timing", "sunday", "closed", "समय"] },
+      { q: "How much does a consultation cost?", a: "A first consultation is **₹400**, including a full check-up.\nA follow-up visit within 15 days is free.", keywords: ["fees", "fee", "price", "cost", "charges", "rate", "फीस"] },
+      { q: "Do I need an appointment?", a: "We recommend booking so you don't have to wait. Walk-ins are welcome when a slot is free.\nTap **Chat on WhatsApp** below to book a time.", keywords: ["book", "booking", "slot", "walk-in", "wait"] },
+      { q: "Where is the clinic?", a: "Shop 12, Sunrise Plaza, Sector 45, Gurugram.\nFree basement parking, 5 minutes' walk from the metro.", keywords: ["address", "location", "map", "directions", "parking", "metro", "पता"] },
+      { q: "Do you handle dental emergencies?", a: "Yes. For severe pain, swelling or a broken tooth, call us at [+91 00000 00000](tel:+910000000000) and we'll fit you in the same day.", keywords: ["emergency", "pain", "urgent", "swelling", "broken", "दर्द"] },
+      { q: "How do I pay? Do you accept insurance?", a: "We accept UPI, cards and cash. We give itemised bills you can use for insurance claims.", keywords: ["payment", "upi", "card", "cash", "insurance", "emi", "bill"] },
+      { q: "Do you treat children?", a: "Yes. Our children's dentist sees kids aged 3 and up, every Saturday.", keywords: ["kids", "child", "children", "baby", "son", "daughter", "बच्चे"] },
+      { q: "How long does teeth cleaning take?", a: "Scaling and polishing takes about **30 to 45 minutes** and costs **₹1,200**.", keywords: ["cleaning", "scaling", "polishing", "whitening", "सफ़ाई"] }
+    ]
+  };
+</script>
+<script src="../dist/help-widget.js" defer></script>
+<script>
+  // Demo only: ?open=1 opens the widget (for screenshots); &q=fees also types a question; &expand=1 opens the first answer.
+  addEventListener("load", function () {
+    var p = new URLSearchParams(location.search);
+    if (p.get("open") !== "1") return;
+    document.querySelector("[data-help-open]").click();
+    var host = document.querySelector("[data-help-widget]"), q = p.get("q");
+    if (q && host) {
+      var input = host.shadowRoot.querySelector("input");
+      input.value = q;
+      input.dispatchEvent(new Event("input"));
+    }
+    var first = host && host.shadowRoot.querySelector("details");
+    if (first && p.get("expand") === "1") first.open = true;
+  });
+</script>
+</body>
+</html>

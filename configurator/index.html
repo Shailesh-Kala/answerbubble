@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AnswerBubble setup (no coding needed)</title>
+<meta name="description" content="Set up a help bubble with instant FAQ answers and WhatsApp chat for your website. Fill in the boxes, check the preview, copy the code.">
+<style>
+  :root { --brand: #0F766E; --brand-dark: #0b5b55; --ink: #17212b; --muted: #4b5563; --line: #d7dee3; --soft: #f3f6f8; --bad: #b42318; --ok: #067647; --warn: #8a5300; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; color: var(--ink); background: var(--soft); }
+  a { color: var(--brand-dark); }
+  :focus-visible { outline: 3px solid #1d4ed8; outline-offset: 2px; }
+  .top { background: var(--ink); color: #fff; }
+  .top .in { max-width: 1240px; margin: 0 auto; padding: 28px 20px 30px; }
+  .top h1 { margin: 0 0 6px; font-size: clamp(26px, 4vw, 36px); line-height: 1.15; }
+  .top p { margin: 0; color: #d6dde3; max-width: 46em; }
+  .steps { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 14px 0 0; padding: 0; list-style: none; color: #fff; font-weight: 600; font-size: 15px; }
+  .steps li::before { content: counter(s) ". "; counter-increment: s; color: #7dd3c8; }
+  .steps { counter-reset: s; }
+  .layout { max-width: 1240px; margin: 0 auto; padding: 24px 20px 60px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 460px); gap: 24px; align-items: start; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 22px; margin-bottom: 20px; }
+  .card > h2 { margin: 0 0 4px; font-size: 21px; }
+  .card > .lead { margin: 0 0 16px; color: var(--muted); }
+  .num { display: inline-grid; place-items: center; width: 28px; height: 28px; margin-right: 8px; border-radius: 50%; background: var(--brand); color: #fff; font-size: 15px; vertical-align: 2px; }
+  label, .label { display: block; font-weight: 650; margin: 14px 0 4px; }
+  .hint { display: block; color: var(--muted); font-size: 14px; margin: 2px 0 6px; font-weight: 400; }
+  input[type=text], input[type=tel], input[type=url], textarea, select { width: 100%; min-height: 46px; padding: 10px 12px; font: inherit; font-size: 16px; color: inherit; background: #fff; border: 1.5px solid #8a929a; border-radius: 10px; }
+  textarea { min-height: 84px; resize: vertical; }
+  input[aria-invalid=true] { border-color: var(--bad); }
+  .msg { font-size: 15px; margin: 6px 0 0; min-height: 0; }
+  .msg.bad { color: var(--bad); font-weight: 600; }
+  .msg.ok { color: var(--ok); }
+  .msg.warn { color: var(--warn); font-weight: 600; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+  .types { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 0; padding: 0; border: 0; }
+  .types legend { padding: 0; margin-bottom: 8px; font-weight: 650; }
+  .type { position: relative; }
+  .type input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+  .type span { display: flex; align-items: center; min-height: 52px; padding: 10px 14px; border: 1.5px solid var(--line); border-radius: 12px; font-weight: 600; line-height: 1.25; }
+  .type input:checked + span { border-color: var(--brand); background: #e8f4f2; box-shadow: inset 0 0 0 1px var(--brand); }
+  .type input:focus-visible + span { outline: 3px solid #1d4ed8; outline-offset: 2px; }
+  .choices { display: flex; flex-wrap: wrap; gap: 8px 20px; }
+  .choices label { display: flex; align-items: center; gap: 8px; min-height: 44px; margin: 0; font-weight: 500; cursor: pointer; }
+  .choices input { width: 20px; height: 20px; accent-color: var(--brand); }
+  .color { display: flex; gap: 10px; align-items: center; }
+  .color input[type=color] { width: 64px; height: 46px; padding: 2px; border: 1.5px solid #8a929a; border-radius: 10px; background: #fff; cursor: pointer; }
+  .color input[type=text] { max-width: 140px; }
+  button { font: inherit; cursor: pointer; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 8px 16px; border-radius: 10px; border: 1.5px solid var(--brand); background: #fff; color: var(--brand-dark); font-weight: 650; }
+  .btn.primary { background: var(--brand); color: #fff; }
+  .btn.big { min-height: 56px; padding: 12px 28px; font-size: 18px; }
+  .btn.small { min-height: 44px; min-width: 44px; padding: 6px 10px; font-size: 14px; border-color: #8a929a; color: var(--ink); }
+  .btn.danger { border-color: #e2b4af; color: var(--bad); }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .faq { border: 1px solid var(--line); border-radius: 12px; padding: 4px 14px 14px; margin-bottom: 12px; background: #fcfdfd; }
+  .faq-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; padding-top: 10px; }
+  .faq-head strong { font-size: 15px; color: var(--muted); }
+  .faq-tools { display: flex; gap: 6px; }
+  .faq label { margin-top: 10px; }
+  details.pro { border: 2px dashed #c8a24a; border-radius: 16px; background: #fffaf0; padding: 0 22px; margin-bottom: 20px; }
+  details.pro > summary { padding: 18px 0; font-size: 20px; font-weight: 700; cursor: pointer; min-height: 44px; }
+  details.pro[open] { padding-bottom: 22px; }
+  .tag { display: inline-block; padding: 2px 10px; border-radius: 999px; background: #8a5300; color: #fff; font-size: 13px; font-weight: 700; vertical-align: 3px; margin-left: 6px; }
+  .days { display: grid; grid-template-columns: 70px 1fr; gap: 8px 12px; align-items: center; }
+  .days label { margin: 0; }
+  .contact { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; align-items: start; margin-bottom: 8px; }
+  .side { position: sticky; top: 16px; }
+  .frame { width: 100%; height: 640px; border: 1px solid var(--line); border-radius: 14px; background: #fff; display: block; }
+  .code { width: 100%; height: 230px; font: 13px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre; overflow: auto; background: #0f1720; color: #e6edf3; border-radius: 12px; padding: 14px; border: 0; }
+  .copyrow { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 14px 0 6px; }
+  .status { font-weight: 650; }
+  [role=tablist] { display: flex; flex-wrap: wrap; gap: 6px; border-bottom: 1.5px solid var(--line); margin: 6px 0 0; }
+  [role=tab] { min-height: 44px; padding: 8px 14px; border: 1.5px solid transparent; border-bottom: 0; border-radius: 10px 10px 0 0; background: transparent; font-weight: 650; color: var(--muted); margin-bottom: -1.5px; }
+  [role=tab][aria-selected=true] { border-color: var(--line); background: #fff; color: var(--ink); }
+  [role=tabpanel] { padding: 14px 4px 0; }
+  [role=tabpanel] ol { padding-left: 22px; margin: 0 0 10px; }
+  [role=tabpanel] li { margin-bottom: 6px; }
+  .plan { background: #fff7e6; border-left: 4px solid #c8a24a; padding: 10px 12px; border-radius: 6px; font-size: 15px; }
+  .src { font-size: 14px; color: var(--muted); }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  footer { max-width: 1240px; margin: 0 auto; padding: 0 20px 40px; color: var(--muted); font-size: 14px; }
+  @media (max-width: 980px) { .layout { grid-template-columns: 1fr; } .side { position: static; } }
+  @media (max-width: 560px) { .row, .types { grid-template-columns: 1fr; } .card { padding: 18px 16px; } .contact { grid-template-columns: 1fr; } .frame { height: 600px; } .code { font-size: 16px; } }
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="in">
+    <h1>Set up your help bubble</h1>
+    <p>No coding needed. Visitors type a question and see your answers instantly. If they need more help, one tap opens WhatsApp with you.</p>
+    <ol class="steps"><li>Pick your business</li><li>Fill in the boxes</li><li>Check the preview</li><li>Copy the code</li><li>Paste it into your website</li></ol>
+  </div>
+</div>
+
+<div class="layout">
+  <form id="form" autocomplete="off" novalidate>
+    <section class="card" aria-labelledby="s1">
+      <h2 id="s1"><span class="num">1</span>Your business</h2>
+      <p class="lead">Pick the closest type. We'll fill in common questions for you to edit.</p>
+      <fieldset class="types" id="types">
+        <legend class="sr">Business type</legend>
+      </fieldset>
+    </section>
+
+    <section class="card" aria-labelledby="s2">
+      <h2 id="s2"><span class="num">2</span>Your details</h2>
+      <label for="whatsapp">WhatsApp number</label>
+      <span class="hint" id="whatsapp-hint">Include your country code, e.g. <strong>91</strong> for India: 91 00000 00000. Don't start with 0.</span>
+      <input type="tel" id="whatsapp" name="whatsapp" inputmode="tel" placeholder="e.g. 91 00000 00000" aria-describedby="whatsapp-hint whatsapp-msg">
+      <p class="msg" id="whatsapp-msg"></p>
+
+      <label for="businessName">Business name</label>
+      <input type="text" id="businessName" name="businessName" placeholder="e.g. Sunrise Dental Clinic" maxlength="80">
+
+      <label for="welcome">Welcome message <span class="hint">Shown when the chat window opens. Leave empty to use ours.</span></label>
+      <textarea id="welcome" name="welcome" rows="2" maxlength="200" placeholder="Hi! Ask us anything, or chat with us on WhatsApp."></textarea>
+
+      <div class="row">
+        <div>
+          <label for="color">Brand colour</label>
+          <div class="color">
+            <input type="color" id="color" name="color" value="#0f766e" aria-describedby="color-hint">
+            <input type="text" id="colorText" aria-label="Brand colour code" maxlength="7" spellcheck="false">
+          </div>
+          <span class="hint" id="color-hint">Text colour (black or white) is picked for you so it's easy to read.</span>
+        </div>
+        <div>
+          <label for="language">Language of the buttons and labels</label>
+          <select id="language" name="language"><option value="en">English</option><option value="hi">Hindi (हिंदी)</option></select>
+          <span class="hint">Write your questions and answers in any language.</span>
+        </div>
+      </div>
+      <div class="label" id="pos-label">Bubble position</div>
+      <div class="choices" role="radiogroup" aria-labelledby="pos-label">
+        <label><input type="radio" name="position" value="right" checked> Bottom right</label>
+        <label><input type="radio" name="position" value="left"> Bottom left</label>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="s3">
+      <h2 id="s3"><span class="num">3</span>Questions and answers</h2>
+      <p class="lead">Replace everything in [square brackets] with your own details. The first 5 are shown as "Popular questions".</p>
+      <p class="hint">In answers you can use <strong>**bold**</strong>, new lines, and links like [Our menu](https://example.com/menu). Keywords help people find an answer with different words, e.g. <em>fees, price, cost</em>.</p>
+      <div id="faqs"></div>
+      <button type="button" class="btn" id="addFaq">+ Add a question</button>
+    </section>
+
+    <details class="pro" id="proBox">
+      <summary>Pro options <span class="tag">PRO</span></summary>
+      <p id="proNote" class="msg"></p>
+      <div class="label" id="ver-label">Which version are you using?</div>
+      <div class="choices" role="radiogroup" aria-labelledby="ver-label">
+        <label><input type="radio" name="version" value="free" checked> Free</label>
+        <label><input type="radio" name="version" value="pro" id="verPro"> Pro</label>
+      </div>
+      <fieldset id="proFields" style="border:0;padding:0;margin:0">
+        <label for="launcherLabel">Text beside the bubble <span class="hint">Optional, e.g. "Need help?"</span></label>
+        <input type="text" id="launcherLabel" name="launcherLabel" maxlength="30">
+
+        <div class="label">More than one WhatsApp number</div>
+        <span class="hint">Optional. Visitors pick who to chat with, e.g. "Appointments" and "Billing".</span>
+        <div id="contacts"></div>
+        <button type="button" class="btn small" id="addContact">+ Add a number</button>
+
+        <div class="label">Office hours</div>
+        <div class="choices"><label><input type="checkbox" id="hoursOn"> Show a "We're closed now" note outside office hours</label></div>
+        <div id="hoursBox">
+          <label for="timezone">Your time zone</label>
+          <input type="text" id="timezone" list="zones" value="Asia/Kolkata" spellcheck="false">
+          <datalist id="zones"></datalist>
+          <span class="hint">Write times like 10:00-13:00, 14:00-19:00 (24-hour clock). Leave a day empty if you're closed.</span>
+          <div class="days" id="days"></div>
+          <p class="msg bad" id="hours-msg" aria-live="polite"></p>
+          <label for="offlineMessage">Closed message <span class="hint">Optional. {when} becomes the next opening time.</span></label>
+          <input type="text" id="offlineMessage" maxlength="160" placeholder="We're closed now. We'll reply from {when}.">
+        </div>
+
+        <label for="hideOn">Hide on these pages <span class="hint">Optional. Page addresses that start with these, separated by commas, e.g. /checkout, /cart</span></label>
+        <input type="text" id="hideOn" spellcheck="false">
+
+        <label for="messageTemplate">WhatsApp message <span class="hint">Optional. {business} = your name, {question} = what they typed, {page} = the page they were on.</span></label>
+        <input type="text" id="messageTemplate" maxlength="300" placeholder="Hi {business}, {question} (From: {page})">
+      </fieldset>
+    </details>
+  </form>
+
+  <aside class="side" aria-labelledby="s4">
+    <section class="card">
+      <h2 id="s4"><span class="num">4</span>Preview</h2>
+      <p class="lead">This is the real widget. It updates as you type. Try searching!</p>
+      <div class="choices"><label><input type="checkbox" id="previewOpen" checked> Show the chat window open</label></div>
+      <iframe id="preview" class="frame" title="Live preview of your help bubble" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"></iframe>
+    </section>
+  </aside>
+</div>
+
+<div class="layout" style="grid-template-columns:minmax(0,1fr);padding-top:0">
+  <section class="card" aria-labelledby="s5" id="copy">
+    <h2 id="s5"><span class="num">5</span>Copy your code</h2>
+    <div class="choices" role="radiogroup" aria-label="Type of code">
+      <label><input type="radio" name="mode" value="inline" checked> <span><strong>All-in-one</strong> (easiest, nothing to upload)</span></label>
+      <label><input type="radio" name="mode" value="hosted"> <span><strong>Short code</strong> (loads the widget from a link)</span></label>
+    </div>
+    <div id="urlBox" hidden>
+      <label for="scriptUrl">Widget file link</label>
+      <span class="hint" id="url-hint"></span>
+      <input type="url" id="scriptUrl" spellcheck="false" aria-describedby="url-hint">
+    </div>
+    <div class="copyrow">
+      <button type="button" class="btn primary big" id="copyBtn">Copy code</button>
+      <span class="status" id="copyStatus" role="status" aria-live="polite"></span>
+    </div>
+    <p class="msg" id="sizeMsg"></p>
+    <label for="code" class="sr">Your code</label>
+    <textarea id="code" class="code" readonly spellcheck="false"></textarea>
+
+    <h3 style="margin:26px 0 0;font-size:19px">Where do I paste this?</h3>
+    <div role="tablist" aria-label="Website platforms" id="tabs"></div>
+    <div id="panels"></div>
+  </section>
+</div>
+
+<footer>
+  Your draft is saved only in this browser, so you can come back later. Nothing you type here is sent anywhere.
+  <button type="button" class="btn small danger" id="reset" style="margin-left:8px">Start over</button>
+</footer>
+
+<script src="widget-code.js"></script>
+<script src="widget-code-pro.js"></script>
+<script>
+"use strict";
+// After you publish the free version on GitHub, put its real address here (see docs/INSTALL.md).
+var FREE_URL = "https://cdn.jsdelivr.net/gh/Shailesh-Kala/answerbubble@v1.0.0/dist/help-widget-free.js";
+var PRO_URL = "https://your-website.com/help-widget.js";
+var KEY = "helpWidgetDraft";
+var HAS_PRO = typeof HW_CODE_PRO === "string";
+var DAYS = [["mon", "Mon"], ["tue", "Tue"], ["wed", "Wed"], ["thu", "Thu"], ["fri", "Fri"], ["sat", "Sat"], ["sun", "Sun"]];
+
+// Ready-made questions. [Square brackets] are blanks for the owner to fill in.
+var TEMPLATES = {
+  clinic: { name: "Clinic or doctor", faqs: [
+    ["What are your timings?", "We're open [Mon to Sat], [10 AM to 7 PM].\nClosed on [Sunday].", "hours, open, time, timing, closed, समय"],
+    ["How much is a consultation?", "A consultation costs **₹[fee]**.\n[Follow-up visits within 7 days are free.]", "fees, fee, price, cost, charges, फीस"],
+    ["Do I need an appointment?", "Yes, please book ahead so you don't have to wait. Tap **Chat on WhatsApp** to book a slot.\n[Walk-ins are seen when a slot is free.]", "appointment, book, booking, slot, walk-in"],
+    ["Where is the clinic?", "[Your full address]\n[Landmark, parking or nearest metro]", "address, location, map, directions, parking, पता"],
+    ["Which doctors are available?", "[Doctor's name], [speciality], available on [days].", "doctor, specialist, available, dr"],
+    ["How can I pay?", "We accept [UPI, cards and cash]. [We give bills for insurance claims.]", "payment, upi, card, cash, insurance"],
+    ["What should I bring to my first visit?", "Please bring [a photo ID, old reports and a list of your current medicines].", "documents, reports, first visit, bring, medicines"],
+    ["What do I do in an emergency?", "For emergencies, call [your emergency number] or go to [nearest hospital].", "emergency, urgent, pain, night"]
+  ]},
+  coaching: { name: "Coaching institute or tutor", faqs: [
+    ["Which courses do you offer?", "We teach [subjects or courses] for [classes or exams].", "courses, subjects, classes, exam, batch"],
+    ["What are the fees?", "Fees for [course] are **₹[amount]** per [month or course].\n[Instalments available.]", "fees, fee, price, cost, instalment, emi, फीस"],
+    ["What are the batch timings?", "[Morning batch: 7 to 9 AM]\n[Evening batch: 5 to 7 PM]\nClasses run [Mon to Sat].", "timings, time, batch, schedule, morning, evening, समय"],
+    ["Is there a free demo class?", "Yes, you can attend [1] free demo class. Message us on WhatsApp to book it.", "demo, trial, free class"],
+    ["Do you have online classes?", "[We teach online and in person.] Online classes are on [platform], [live or recorded].", "online, offline, live, recorded, zoom"],
+    ["Where is the institute?", "[Your full address]\n[Landmark]", "address, location, map, centre, branch"],
+    ["How do I join?", "Send us the student's [name, class and course] on WhatsApp. We'll share the next steps for [registration and payment].", "admission, enrol, enroll, join, register, registration"],
+    ["Do you give study material and tests?", "Yes: [notes, weekly tests and doubt sessions] are included.", "notes, material, books, tests, doubts"]
+  ]},
+  restaurant: { name: "Restaurant or café", faqs: [
+    ["What are your opening hours?", "We're open [every day], [11 AM to 11 PM].\nThe kitchen closes at [10:30 PM].", "hours, open, timings, time, close, समय"],
+    ["Do you deliver?", "Yes, we deliver within [5 km]. Order on WhatsApp or on [delivery apps].\nMinimum order: ₹[amount].", "delivery, deliver, home, order, online"],
+    ["Can I book a table?", "Yes. Send us the date, time and number of guests on WhatsApp and we'll confirm.", "reservation, reserve, book, table, booking"],
+    ["Do you have vegetarian options?", "[Yes, most of our menu is vegetarian. We also have Jain and vegan dishes.]", "veg, vegetarian, vegan, jain, menu"],
+    ["Where can I see the menu?", "See our full menu here: [Menu](https://your-website.com/menu) (put your menu link here).\nAsk us on WhatsApp for today's specials.", "menu, dishes, food, prices"],
+    ["Do you host parties?", "Yes, we host [birthdays and office parties] for up to [40] guests. Please book [3 days] ahead.", "party, birthday, event, group, catering"],
+    ["Where are you? Is there parking?", "[Your full address]\n[Parking details]", "address, location, map, parking, directions"],
+    ["How can I pay?", "We accept [UPI, cards and cash].", "payment, upi, card, cash"]
+  ]},
+  shop: { name: "Shop or online store", faqs: [
+    ["What are your shop timings?", "We're open [Mon to Sat], [10 AM to 9 PM].", "hours, open, timings, time, समय"],
+    ["Do you deliver? How long does it take?", "We deliver to [areas] in [2 to 5 days].\nDelivery is free on orders above ₹[amount].", "delivery, shipping, ship, courier, days"],
+    ["What is your return or exchange policy?", "You can return or exchange items within [7 days] if they're unused, with the tag on. Message us on WhatsApp to start.", "return, exchange, refund, replace"],
+    ["Do you offer cash on delivery?", "[Yes, cash on delivery is available for orders up to ₹[amount].]", "cod, cash, payment, upi, card"],
+    ["How can I track my order?", "[You'll get a tracking link by SMS.] Or send us your order number on WhatsApp.", "track, tracking, order, status"],
+    ["Is this item in stock?", "Send us the item name or a photo on WhatsApp and we'll check right away.", "stock, available, availability, size, colour, color"],
+    ["Where is your shop?", "[Your full address]\n[Landmark]", "address, location, map, store, directions"],
+    ["Do you take bulk orders?", "Yes, we take [bulk and corporate gift] orders. Message us with the item and quantity.", "bulk, wholesale, corporate, gift"]
+  ]},
+  salon: { name: "Salon or spa", faqs: [
+    ["What are your timings?", "We're open [every day], [10 AM to 8 PM].", "hours, open, timings, time, समय"],
+    ["Do I need an appointment?", "We recommend booking so you don't wait. Tap **Chat on WhatsApp** to book.\n[Walk-ins welcome when free.]", "appointment, book, booking, slot, walk-in"],
+    ["What are your prices?", "[Haircut: ₹X]\n[Facial: ₹Y]\n[Hair spa: ₹Z]\nAsk us for the full price list.", "price, prices, rate, rates, cost, charges, menu"],
+    ["Which services do you offer?", "[Haircuts, colour, facials, waxing, manicure, pedicure, massage and makeup.]", "services, haircut, hair, facial, spa, massage, makeup, waxing"],
+    ["Do you have bridal packages?", "Yes. [Bridal and party makeup packages start at ₹[amount].] Book [2 weeks] ahead.", "bridal, wedding, party, package, makeup"],
+    ["Which products do you use?", "We use [brand names]. Tell us about any allergies before your visit.", "products, brand, organic, allergy"],
+    ["Where are you located?", "[Your full address]\n[Landmark, parking]", "address, location, map, directions, parking"],
+    ["What if I need to cancel?", "Please tell us at least [3 hours] before your appointment so we can give the slot to someone else.", "cancel, cancellation, reschedule, late"]
+  ]},
+  realestate: { name: "Real estate agent", faqs: [
+    ["Which areas do you cover?", "We help with homes in [areas or sectors] in [city].", "area, areas, location, sector, city"],
+    ["Do you help with buying, selling and renting?", "Yes, we help with [buying, selling and renting] homes [and shops].", "buy, sell, rent, rental, lease, flat, house"],
+    ["What are your charges?", "Our fee is [1% of the deal value] for sales and [one month's rent] for rentals, paid [when the deal is done].", "brokerage, commission, fees, charges, cost"],
+    ["Can I book a site visit?", "Yes. Send us the property and a time that suits you on WhatsApp.", "visit, site visit, viewing, see, tour"],
+    ["Do you help with home loans?", "[Yes, we work with banks to help you compare home loan offers.]", "loan, home loan, bank, emi, finance"],
+    ["Which documents do I need?", "Usually [ID proof, address proof, PAN card and income proof]. We'll tell you exactly what's needed for your deal.", "documents, papers, kyc, registry, agreement"],
+    ["Do you have ready-to-move homes?", "[Yes, we have ready-to-move and under-construction options.] Tell us your budget on WhatsApp.", "ready, possession, new, resale, under construction, budget"],
+    ["What are your office timings?", "[Mon to Sat], [10 AM to 7 PM]. Site visits on [Sunday] by appointment.", "timings, hours, open, office, time"]
+  ]}
+};
+
+// Where to paste: steps checked against each platform's official help pages (October 2026).
+var PLATFORMS = [
+  { id: "wordpress", name: "WordPress", steps: [
+    "In your WordPress dashboard, go to **Plugins > Add New Plugin**. Search for **WPCode**, click **Install Now**, then **Activate**. (WPCode is free.)",
+    "Go to **Code Snippets > Header & Footer**.",
+    "Paste your code into the **Footer** box and click **Save Changes**.",
+    "If you use a cache plugin, clear its cache. Then open your website to check the bubble."
+  ], plan: "Self-hosted WordPress: free. On WordPress.com, installing plugins needs a paid plan.", links: [["WPCode plugin", "https://wordpress.org/plugins/insert-headers-and-footers/"], ["WPCode: Header & Footer", "https://wpcode.com/docs/using-the-global-header-footer-settings/"], ["WordPress.com plugins", "https://wordpress.com/support/plugins/"]] },
+  { id: "framer", name: "Framer", steps: [
+    "Open your project and go to **Project Settings** (called **Site Settings** in older versions).",
+    "Open the **Custom Code** tab and click **Add Script** (or **+**).",
+    "Name it \"Help widget\", paste your code, and choose the **end of <body>** position. Leave the page list empty so it shows on every page.",
+    "Publish your site. Custom code doesn't run in the editor preview, only on the published site."
+  ], plan: "Framer's docs don't list a plan for custom code. Its Free plan is meant for non-commercial use and can't use your own domain, so a business site usually needs a paid plan.", links: [["Framer: How to add custom code", "https://www.framer.com/help/articles/how-to-add-custom-code/"], ["Framer pricing", "https://www.framer.com/pricing"]] },
+  { id: "webflow", name: "Webflow", steps: [
+    "Open **Site settings**, then the **Custom code** tab.",
+    "Paste your code into the **Footer code** box. It holds up to 50,000 characters.",
+    "Click **Save changes**.",
+    "**Publish** your site. Custom code only goes live after you publish."
+  ], plan: "Needs a paid plan: an active Site plan, or a Core, Growth, Agency or Freelancer Workspace.", links: [["Webflow: Custom code in head and body tags", "https://help.webflow.com/hc/en-us/articles/33961357265299"]] },
+  { id: "shopify", name: "Shopify", steps: [
+    "In your Shopify admin, go to **Online Store > Themes**.",
+    "Next to your current theme, click the **…** button and choose **Duplicate** to keep a backup. Then click **…** again and choose **Edit code**.",
+    "Under **Layout**, open **theme.liquid**.",
+    "Paste your code just above `</body>` near the bottom, then click **Save**.",
+    "If you switch themes later, paste the code into the new theme too."
+  ], plan: "Works on any Shopify plan with an online store. If you're trying a paid theme, you can edit its code only after buying it.", links: [["Shopify: Edit theme code", "https://help.shopify.com/en/manual/online-store/themes/theme-structure/extend/edit-theme-code"]] },
+  { id: "wix", name: "Wix", steps: [
+    "Open your site's dashboard and go to **Settings**.",
+    "Under **Development & integrations**, click **Custom Code**, then **+ Add Custom Code**.",
+    "Paste your code and name it \"Help widget\". Choose **All pages**, and under **Place Code in** choose **Body - end**.",
+    "Click **Apply**, then open your live site to check."
+  ], plan: "Needs a paid plan: Wix only allows custom code on a published site with a connected domain, and connecting a domain needs a Premium plan.", links: [["Wix: Embedding custom code", "https://support.wix.com/en/article/embedding-custom-code-on-your-site"]] },
+  { id: "squarespace", name: "Squarespace", steps: [
+    "Open **Pages**, scroll down to **Website Tools** and click **Code Injection**.",
+    "Paste your code into the **Footer** box.",
+    "Click **Save**. Check your live site in a private window, because the editor may not run scripts."
+  ], plan: "Code injection is included in the Core, Plus and Advanced plans and some older plans, but not the cheapest plan.", links: [["Squarespace: Using code injection", "https://support.squarespace.com/hc/en-us/articles/205815908-Using-code-injection"]] },
+  { id: "html", name: "Plain HTML", steps: [
+    "Open your page's HTML file in a text editor.",
+    "Paste your code just above `</body>`.",
+    "Save and upload the file. Do the same on every page, or once in a shared footer file if your site has one."
+  ], plan: "Free. Works with any web host.", links: [] }
+];
+
+var $ = function (id) { return document.getElementById(id); };
+function el(tag, attrs, text) {
+  var e = document.createElement(tag);
+  for (var k in attrs || {}) e.setAttribute(k, attrs[k]);
+  if (text != null) e.textContent = text;
+  return e;
+}
+// Same rule as the widget: strip + spaces dashes brackets, then 8-15 digits, not starting with 0.
+function cleanNumber(n) {
+  var d = String(n == null ? "" : n).replace(/[\s+\-()[\]]/g, "");
+  return /^[1-9]\d{7,14}$/.test(d) ? d : null;
+}
+// Fixed help text: **bold** and `code` become <b> and <code>, built with DOM nodes.
+function rich(node, text) {
+  text.split(/(\*\*[^*]+\*\*|`[^`]+`)/).forEach(function (part) {
+    if (/^\*\*/.test(part)) node.append(el("b", null, part.slice(2, -2)));
+    else if (/^`/.test(part)) node.append(el("code", null, part.slice(1, -1)));
+    else if (part) node.append(part);
+  });
+  return node;
+}
+function store(fn) { try { return fn(); } catch (e) { return null; } }
+
+/* ---------- State ---------- */
+function fromTemplate(type) {
+  return TEMPLATES[type].faqs.map(function (f) { return { q: f[0], a: f[1], k: f[2] }; });
+}
+function defaults() {
+  var days = {};
+  DAYS.forEach(function (d) { days[d[0]] = d[0] === "sun" ? "" : "10:00-19:00"; });
+  return {
+    type: "clinic", faqs: fromTemplate("clinic"), edited: false,
+    whatsapp: "", businessName: "", welcome: "", color: "#0f766e", position: "right", language: "en",
+    version: HAS_PRO ? "pro" : "free", launcherLabel: "", contacts: [], hoursOn: false, timezone: "Asia/Kolkata",
+    days: days, offlineMessage: "", hideOn: "", messageTemplate: "",
+    mode: "inline", scriptUrl: "", previewOpen: true
+  };
+}
+var state = Object.assign(defaults(), store(function () { return JSON.parse(localStorage.getItem(KEY)); }) || {});
+if (!HAS_PRO) state.version = "free";
+function save() { store(function () { localStorage.setItem(KEY, JSON.stringify(state)); }); }
+
+/* ---------- Business type picker ---------- */
+Object.keys(TEMPLATES).forEach(function (key) {
+  var wrap = el("label", { "class": "type" }), input = el("input", { type: "radio", name: "type", value: key });
+  wrap.append(input, el("span", null, TEMPLATES[key].name));
+  $("types").append(wrap);
+});
+$("types").addEventListener("change", function (e) {
+  var type = e.target.value;
+  if (state.edited && !confirm("Replace your questions with the \"" + TEMPLATES[type].name + "\" questions? Your current questions will be removed.")) {
+    e.target.checked = false;
+    document.querySelector("input[name=type][value=" + state.type + "]").checked = true;
+    return;
+  }
+  state.type = type;
+  state.faqs = fromTemplate(type);
+  state.edited = false;
+  renderFaqs();
+  changed();
+});
+
+/* ---------- FAQ editor ---------- */
+function renderFaqs(focus) {
+  var box = $("faqs");
+  box.replaceChildren();
+  state.faqs.forEach(function (f, i) {
+    var item = el("div", { "class": "faq", role: "group", "aria-label": "Question " + (i + 1) });
+    var head = el("div", { "class": "faq-head" }), tools = el("div", { "class": "faq-tools" });
+    head.append(el("strong", null, "Question " + (i + 1)), tools);
+    [["up", "↑ Up", "Move question " + (i + 1) + " up"], ["down", "↓ Down", "Move question " + (i + 1) + " down"], ["remove", "Remove", "Remove question " + (i + 1)]].forEach(function (b) {
+      var btn = el("button", { type: "button", "class": "btn small" + (b[0] === "remove" ? " danger" : ""), "data-act": b[0], "data-i": i, "aria-label": b[2] }, b[1]);
+      if ((b[0] === "up" && i === 0) || (b[0] === "down" && i === state.faqs.length - 1)) btn.disabled = true;
+      tools.append(btn);
+    });
+    item.append(head);
+    [["q", "Question", "input"], ["a", "Answer", "textarea"], ["k", "Keywords (separated by commas)", "input"]].forEach(function (fd) {
+      var id = "faq-" + i + "-" + fd[0];
+      var input = el(fd[2], { id: id, "data-i": i, "data-k": fd[0], maxlength: fd[0] === "a" ? 1000 : 200 });
+      if (fd[2] === "input") input.type = "text";
+      else input.rows = Math.max(3, (f[fd[0]] || "").split("\n").length + 1);
+      input.value = f[fd[0]] || "";
+      item.append(el("label", { "for": id }, fd[1]), input);
+    });
+    box.append(item);
+  });
+  if (focus) {
+    var t = box.querySelector(focus.sel);
+    if (t && !t.disabled) t.focus();
+    else if (box.querySelector("#faq-" + focus.i + "-q")) box.querySelector("#faq-" + focus.i + "-q").focus();
+    else $("addFaq").focus();
+  }
+}
+$("faqs").addEventListener("input", function (e) {
+  var i = e.target.getAttribute("data-i"), k = e.target.getAttribute("data-k");
+  if (k) { state.faqs[i][k] = e.target.value; state.edited = true; changed(); }
+});
+$("faqs").addEventListener("click", function (e) {
+  var b = e.target.closest("button[data-act]");
+  if (!b) return;
+  var i = +b.getAttribute("data-i"), act = b.getAttribute("data-act"), list = state.faqs, j = i;
+  if (act === "remove") {
+    if ((list[i].q || list[i].a) && !confirm("Remove this question?")) return;
+    list.splice(i, 1);
+    j = Math.min(i, list.length - 1);
+  } else {
+    j = act === "up" ? i - 1 : i + 1;
+    list.splice(j, 0, list.splice(i, 1)[0]);
+  }
+  state.edited = true;
+  renderFaqs({ sel: "[data-act=" + act + "][data-i='" + j + "']", i: j });
+  changed();
+});
+$("addFaq").addEventListener("click", function () {
+  state.faqs.push({ q: "", a: "", k: "" });
+  state.edited = true;
+  renderFaqs({ sel: "#faq-" + (state.faqs.length - 1) + "-q", i: state.faqs.length - 1 });
+  changed();
+});
+
+/* ---------- Pro: contacts and hours ---------- */
+function renderContacts(focusLast) {
+  var box = $("contacts");
+  box.replaceChildren();
+  state.contacts.forEach(function (c, i) {
+    var row = el("div", { "class": "contact", role: "group", "aria-label": "Number " + (i + 1) });
+    var label = el("input", { type: "text", "data-i": i, "data-k": "label", placeholder: "Label, e.g. Appointments", "aria-label": "Label for number " + (i + 1), maxlength: 40 });
+    var num = el("input", { type: "tel", "data-i": i, "data-k": "whatsapp", placeholder: "WhatsApp number with country code", "aria-label": "WhatsApp number " + (i + 1) });
+    label.value = c.label || "";
+    num.value = c.whatsapp || "";
+    var del = el("button", { type: "button", "class": "btn small danger", "data-i": i, "aria-label": "Remove number " + (i + 1) }, "Remove");
+    row.append(label, num, del);
+    box.append(row);
+  });
+  if (focusLast && box.lastChild) box.lastChild.querySelector("input").focus();
+}
+$("contacts").addEventListener("input", function (e) {
+  var i = e.target.getAttribute("data-i"), k = e.target.getAttribute("data-k");
+  if (k) { state.contacts[i][k] = e.target.value; changed(); }
+});
+$("contacts").addEventListener("click", function (e) {
+  var b = e.target.closest("button");
+  if (!b) return;
+  state.contacts.splice(+b.getAttribute("data-i"), 1);
+  renderContacts();
+  $("addContact").focus();
+  changed();
+});
+$("addContact").addEventListener("click", function () {
+  state.contacts.push({ label: "", whatsapp: "" });
+  renderContacts(true);
+  changed();
+});
+DAYS.forEach(function (d) {
+  $("days").append(el("label", { "for": "day-" + d[0] }, d[1]), el("input", { type: "text", id: "day-" + d[0], "data-day": d[0], placeholder: "Closed", spellcheck: "false" }));
+});
+if (Intl.supportedValuesOf) Intl.supportedValuesOf("timeZone").forEach(function (z) { $("zones").append(el("option", { value: z })); });
+
+// "10:00-13:00, 14:00-19:00" -> [["10:00","13:00"],["14:00","19:00"]]; returns null if it can't be read.
+function parseDay(text) {
+  if (!text.trim()) return [];
+  var out = [];
+  var ok = text.split(",").every(function (part) {
+    var m = /^\s*(\d{1,2}):(\d{2})\s*(?:-|–|to)\s*(\d{1,2}):(\d{2})\s*$/i.exec(part);
+    if (!m || +m[1] > 24 || +m[3] > 24 || +m[2] > 59 || +m[4] > 59) return false;
+    var a = m[1].padStart(2, "0") + ":" + m[2], b = m[3].padStart(2, "0") + ":" + m[4];
+    if (a >= b) return false;
+    out.push([a, b]);
+    return true;
+  });
+  return ok ? out : null;
+}
+function validZone(z) { try { new Intl.DateTimeFormat("en", { timeZone: z }); return true; } catch (e) { return false; } }
+
+/* ---------- Simple fields ---------- */
+var FIELDS = ["whatsapp", "businessName", "welcome", "language", "launcherLabel", "timezone", "offlineMessage", "hideOn", "messageTemplate", "scriptUrl"];
+function fillForm() {
+  FIELDS.forEach(function (f) { $(f).value = state[f]; });
+  $("color").value = state.color;
+  $("colorText").value = state.color.toUpperCase();
+  document.querySelector("input[name=position][value=" + state.position + "]").checked = true;
+  document.querySelector("input[name=version][value=" + state.version + "]").checked = true;
+  document.querySelector("input[name=mode][value=" + state.mode + "]").checked = true;
+  var t = document.querySelector("input[name=type][value=" + state.type + "]");
+  if (t) t.checked = true;
+  $("hoursOn").checked = state.hoursOn;
+  $("previewOpen").checked = state.previewOpen;
+  DAYS.forEach(function (d) { $("day-" + d[0]).value = state.days[d[0]] || ""; });
+  renderFaqs();
+  renderContacts();
+}
+$("form").addEventListener("input", function (e) {
+  var t = e.target;
+  if (FIELDS.indexOf(t.id) >= 0) state[t.id] = t.value;
+  else if (t.id === "color") { state.color = t.value; $("colorText").value = t.value.toUpperCase(); }
+  else if (t.id === "colorText") { if (/^#[0-9a-f]{6}$/i.test(t.value)) { state.color = t.value.toLowerCase(); $("color").value = state.color; } }
+  else if (t.name === "position" || t.name === "version") state[t.name] = t.value;
+  else if (t.id === "hoursOn") state.hoursOn = t.checked;
+  else if (t.getAttribute("data-day")) state.days[t.getAttribute("data-day")] = t.value;
+  else return;
+  changed();
+});
+document.addEventListener("change", function (e) {
+  if (e.target.name === "mode") { state.mode = e.target.value; changed(); }
+  if (e.target.id === "previewOpen") { state.previewOpen = e.target.checked; changed(); }
+  if (e.target.id === "scriptUrl") { state.scriptUrl = e.target.value; changed(); }
+});
+$("scriptUrl").addEventListener("input", function (e) { state.scriptUrl = e.target.value; changed(); });
+
+/* ---------- Build the config and code ---------- */
+function isPro() { return HAS_PRO && state.version === "pro"; }
+function buildConfig() {
+  var num = cleanNumber(state.whatsapp);
+  var c = { whatsapp: num || state.whatsapp.trim() };
+  if (state.businessName.trim()) c.businessName = state.businessName.trim();
+  if (state.welcome.trim()) c.welcome = state.welcome.trim();
+  c.color = state.color.toUpperCase();
+  c.position = state.position;
+  c.language = state.language;
+  if (isPro()) {
+    if (state.launcherLabel.trim()) c.launcherLabel = state.launcherLabel.trim();
+    var contacts = state.contacts.filter(function (x) { return x.label.trim() && cleanNumber(x.whatsapp); })
+      .map(function (x) { return { label: x.label.trim(), whatsapp: cleanNumber(x.whatsapp) }; });
+    if (contacts.length) c.contacts = contacts;
+    if (state.hoursOn && validZone(state.timezone)) {
+      var h = { timezone: state.timezone };
+      DAYS.forEach(function (d) { h[d[0]] = parseDay(state.days[d[0]] || "") || []; });
+      if (state.offlineMessage.trim()) h.offlineMessage = state.offlineMessage.trim();
+      c.hours = h;
+    }
+    var hide = state.hideOn.split(",").map(function (s) { return s.trim(); }).filter(Boolean);
+    if (hide.length) c.hideOn = hide;
+    if (state.messageTemplate.trim()) c.messageTemplate = state.messageTemplate.trim();
+  }
+  c.faqs = state.faqs.filter(function (f) { return f.q.trim() && f.a.trim(); }).map(function (f) {
+    return { q: f.q.trim(), a: f.a.trim(), keywords: f.k.split(",").map(function (s) { return s.trim(); }).filter(Boolean) };
+  });
+  return c;
+}
+// JSON with "<" escaped, so nothing typed here can end the script tag early.
+// One setting per line, one question per line.
+function configJs() {
+  var c = buildConfig();
+  var body = Object.keys(c).map(function (k) {
+    var v = k === "faqs" ? "[\n" + c.faqs.map(function (f) { return "    " + JSON.stringify(f); }).join(",\n") + "\n  ]" : JSON.stringify(c[k]);
+    return "  " + k + ": " + v;
+  }).join(",\n");
+  return ("window.HelpWidget = {\n" + body + "\n};").replace(/</g, "\\u003c");
+}
+function widgetCode() { return isPro() ? HW_CODE_PRO : HW_CODE_FREE; }
+function inlineCode() {
+  return "\x3C!-- AnswerBubble: FAQ answers + WhatsApp chat. Paste just before </body>. -->\n\x3Cscript>\n" + configJs() + "\n" + widgetCode() + "\x3C/script>\n";
+}
+function scriptUrl() { return state.scriptUrl.trim() || (isPro() ? PRO_URL : FREE_URL); }
+function hostedCode() {
+  return "\x3C!-- AnswerBubble: FAQ answers + WhatsApp chat. Paste just before </body>. -->\n\x3Cscript>\n" + configJs() + "\n\x3C/script>\n\x3Cscript src=\"" + scriptUrl().replace(/["<>\s]/g, encodeURIComponent) + "\" defer>\x3C/script>\n";
+}
+
+/* ---------- Validation messages ---------- */
+function setMsg(id, cls, text) { var m = $(id); m.className = "msg " + cls; m.textContent = text; }
+function validate() {
+  var raw = state.whatsapp.trim(), num = cleanNumber(raw), input = $("whatsapp");
+  input.setAttribute("aria-invalid", raw && !num ? "true" : "false");
+  if (!raw) setMsg("whatsapp-msg", "warn", "Add your WhatsApp number. The bubble won't show without it.");
+  else if (!num) setMsg("whatsapp-msg", "bad", "This number doesn't look right. Add your country code, e.g. 91 for India, and don't start with 0. Use 8 to 15 digits.");
+  else if (/^[6-9]\d{9}$/.test(num)) setMsg("whatsapp-msg", "warn", "This looks like an Indian mobile number without the country code. If so, add 91 in front: 91" + num + ".");
+  else setMsg("whatsapp-msg", "ok", "Looks good: wa.me/" + num);
+
+  var bad = [];
+  if (isPro() && state.hoursOn) {
+    if (!validZone(state.timezone)) bad.push("Time zone not recognised. Pick one from the list, e.g. Asia/Kolkata.");
+    DAYS.forEach(function (d) {
+      var ok = parseDay(state.days[d[0]] || "") !== null;
+      $("day-" + d[0]).setAttribute("aria-invalid", ok ? "false" : "true");
+      if (!ok) bad.push(d[1] + ": write times like 10:00-13:00, 14:00-19:00.");
+    });
+  }
+  $("hours-msg").textContent = bad.join(" ");
+  $("hoursBox").hidden = !state.hoursOn;
+  $("proFields").disabled = !isPro();
+  $("proNote").className = "msg " + (HAS_PRO ? "" : "warn");
+  $("proNote").textContent = HAS_PRO
+    ? (isPro() ? "These options work with the Pro version." : "Choose Pro to use these options. The free code ignores them.")
+    : "These options need the Pro version (available on Contra). Your free code works without them.";
+  $("verPro").disabled = !HAS_PRO;
+  return !!num;
+}
+
+/* ---------- Preview (the real widget in a sandboxed frame) ---------- */
+var timer;
+function previewDoc() {
+  var num = cleanNumber(state.whatsapp);
+  var page = "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">" +
+    "<style>body{margin:0;font:15px/1.5 system-ui,sans-serif;background:#f3f4f6;color:#6b7280}.nav{height:54px;background:#fff;border-bottom:1px solid #e5e7eb}" +
+    ".b{background:#e5e7eb;border-radius:10px;margin:18px}.t{margin:18px;font-weight:600}</style></head><body><div class=\"nav\"></div>" +
+    "<p class=\"t\">" + (num ? "Your website" : "Add a valid WhatsApp number to see the bubble.") + "</p><div class=\"b\" style=\"height:120px\"></div><div class=\"b\" style=\"height:60px\"></div><div class=\"b\" style=\"height:160px\"></div>";
+  var opener = state.previewOpen
+    ? "\x3Cscript>addEventListener('load',function(){var h=document.querySelector('[data-help-widget]');if(!h)return;var f=HTMLElement.prototype.focus;HTMLElement.prototype.focus=function(){};h.shadowRoot.querySelector('.launch').click();HTMLElement.prototype.focus=f;});\x3C/script>"
+    : "";
+  return page + inlineCode() + opener + "</body></html>";
+}
+function updatePreview() { $("preview").srcdoc = previewDoc(); }
+
+/* ---------- Code box and copy ---------- */
+function updateCode() {
+  var code = state.mode === "inline" ? inlineCode() : hostedCode();
+  $("code").value = code;
+  $("urlBox").hidden = state.mode !== "hosted";
+  $("url-hint").textContent = isPro()
+    ? "Upload help-widget.js (from your Pro download) to your website, then paste its link here."
+    : "Link to the free help-widget-free.js file, e.g. on jsDelivr. Leave as it is if you're not sure, or use the All-in-one code instead.";
+  $("scriptUrl").placeholder = isPro() ? PRO_URL : FREE_URL;
+  var n = code.length;
+  $("sizeMsg").className = "msg" + (n > 50000 ? " warn" : "");
+  $("sizeMsg").textContent = n.toLocaleString("en-IN") + " characters" + (n > 50000 ? ". That's over Webflow's 50,000 limit: shorten some answers or use the Short code." : ". That's within Webflow's 50,000-character limit (the other platforms below don't publish a limit).");
+  $("copyStatus").textContent = "";
+}
+$("copyBtn").addEventListener("click", function () {
+  if (!validate()) {
+    $("whatsapp").focus();
+    $("copyStatus").textContent = "Fix the WhatsApp number first (step 2).";
+    return;
+  }
+  var box = $("code"), done = function () { $("copyStatus").textContent = "Copied! Now paste it into your website (see below)."; };
+  var manual = function () {
+    box.focus();
+    box.select();
+    $("copyStatus").textContent = "The code is selected. Press Ctrl+C (Windows) or Cmd+C (Mac) to copy it.";
+  };
+  try { navigator.clipboard.writeText(box.value).then(done, manual); } catch (e) { manual(); }
+});
+
+/* ---------- Platform tabs ---------- */
+PLATFORMS.forEach(function (p, i) {
+  var tab = el("button", { type: "button", role: "tab", id: "tab-" + p.id, "aria-controls": "panel-" + p.id, "aria-selected": i === 0 ? "true" : "false", tabindex: i === 0 ? "0" : "-1" }, p.name);
+  var panel = el("div", { role: "tabpanel", id: "panel-" + p.id, "aria-labelledby": "tab-" + p.id, tabindex: "0" });
+  panel.hidden = i !== 0;
+  var ol = el("ol");
+  p.steps.forEach(function (s) { ol.append(rich(el("li"), s)); });
+  panel.append(ol, el("p", { "class": "plan" }, p.plan));
+  if (p.links.length) {
+    var src = el("p", { "class": "src" }, "Official help: ");
+    p.links.forEach(function (l, j) {
+      if (j) src.append(" · ");
+      src.append(el("a", { href: l[1], target: "_blank", rel: "noopener noreferrer" }, l[0]));
+    });
+    panel.append(src);
+  }
+  $("tabs").append(tab);
+  $("panels").append(panel);
+});
+function selectTab(tab) {
+  document.querySelectorAll("[role=tab]").forEach(function (t) {
+    var on = t === tab;
+    t.setAttribute("aria-selected", on ? "true" : "false");
+    t.tabIndex = on ? 0 : -1;
+    $(t.getAttribute("aria-controls")).hidden = !on;
+  });
+  tab.focus();
+}
+$("tabs").addEventListener("click", function (e) { if (e.target.getAttribute("role") === "tab") selectTab(e.target); });
+$("tabs").addEventListener("keydown", function (e) {
+  var tabs = Array.prototype.slice.call(document.querySelectorAll("[role=tab]")), i = tabs.indexOf(document.activeElement);
+  if (i < 0) return;
+  var j = e.key === "ArrowRight" ? (i + 1) % tabs.length : e.key === "ArrowLeft" ? (i - 1 + tabs.length) % tabs.length : e.key === "Home" ? 0 : e.key === "End" ? tabs.length - 1 : -1;
+  if (j >= 0) { e.preventDefault(); selectTab(tabs[j]); }
+});
+
+/* ---------- Start over ---------- */
+$("reset").addEventListener("click", function () {
+  if (!confirm("Clear everything and start again?")) return;
+  store(function () { localStorage.removeItem(KEY); });
+  state = defaults();
+  fillForm();
+  changed();
+});
+
+/* ---------- Update everything ---------- */
+function changed() {
+  validate();
+  updateCode();
+  save();
+  clearTimeout(timer);
+  timer = setTimeout(updatePreview, 350);
+}
+fillForm();
+changed();
+</script>
+</body>
+</html>
