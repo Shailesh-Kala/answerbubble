@@ -1,8 +1,8 @@
-/*! AnswerBubble v1.0.0 (free) | MIT licence | (c) 2026 Shailesh Kala */
+/*! AnswerBubble v1.0.1 (free) | MIT licence | (c) 2026 Shailesh Kala */
 // AnswerBubble: FAQ answers + WhatsApp chat. Config: window.HelpWidget. See README.md.
 (function () {
   "use strict";
-  const VERSION = "1.0.0";
+  const VERSION = "1.0.1";
   let PRO = false;
   const PRO_KEYS = ["contacts", "hours", "strings", "messageTemplate", "launcherLabel", "hideOn"];
   const DEFAULT_COLOR = "#0F766E";
@@ -146,11 +146,11 @@
     return /^[1-9]\d{7,14}$/.test(d) ? d : null;
   };
 
-  // Origin + path only: never the query string or hash, which can hold private data.
+  // Web pages only, origin + path: no query/hash (private data), no file: paths.
   function pageUrl(href) {
     try {
       const u = new URL(href);
-      return u.origin !== "null" ? u.origin + u.pathname : u.href.split(/[?#]/)[0];
+      return /^https?:$/.test(u.protocol) ? u.origin + u.pathname : "";
     } catch (e) {
       return "";
     }
@@ -158,8 +158,9 @@
 
   const fill = (tpl, vals) => String(tpl).replace(/\{(\w+)\}/g, (m, k) => (k in vals ? vals[k] : m));
 
+  // No page: drop its line.
   const message = (tpl, business, question, page, ask) =>
-    fill(tpl, { business: business || "", question: String(question || "").trim() || ask, page }).replace(/ +,/g, ",");
+    fill(page ? tpl : String(tpl).replace(/\n[^\n]*\{page\}[^\n]*/g, ""), { business: business || "", question: String(question || "").trim() || ask, page }).replace(/ +,/g, ",");
 
   const waLink = (num, text) => "https://wa.me/" + num + "?text=" + encodeURIComponent(text);
 

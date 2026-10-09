@@ -33,7 +33,7 @@
     ]
   };
 </script>
-<script src="https://cdn.jsdelivr.net/gh/Shailesh-Kala/answerbubble@v1.0.0/dist/help-widget-free.js" defer></script>
+<script src="https://cdn.jsdelivr.net/gh/Shailesh-Kala/answerbubble@v1.0.1/dist/help-widget-free.js" defer></script>
 ```
 
 Replace `910000000000` with your own number. You can also put the contents of `help-widget-free.js` inside the first `<script>` instead of using the link ("All-in-one" code), so there is nothing to host.
